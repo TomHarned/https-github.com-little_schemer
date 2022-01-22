@@ -508,3 +508,122 @@
        (cons (car set1) (union (cdr set1) set2))))))
 
 (union '(stewed tomatoes or macaroni) '(macaroni beer mango))
+
+(intersect '(stewed tomatoes or macaroni) '(macaroni beer mango))
+
+(define intersect
+  (lambda (set1 set2)
+    (cond
+     ((null? set1) (quote ()))
+     ((member? (car set1) set2)
+      (cons (car set1) (intersect (cdr set1) set2)))
+     (else
+      (intersect (cdr set1) set2)))))
+
+
+(define intersectall
+  (lambda (l-set)
+    (cond
+     ((null? (cdr l-set)) (car l-set))
+     (else
+      (intersect (car l-set)
+              (intersectall (cdr l-set)))))))
+
+(intersectall '((1 2 4) (5 4 3) (4 5 6)))
+
+(intersect '(1 2 4)
+           (intersectall '((5 4 3) (4 5 6))))
+
+(intersect '(1 2 4)
+           (intersect '(5 4 3))
+           (intersectall '((4 5 6))))
+
+(intersect '(1 2 4)
+       (intersect '(5 4 3)
+                '(4 5 6)))
+
+(intersectall '(1 2 3) '(5 4 3) '(4 5 6))
+
+(define a-pair?
+  (lambda (x)
+    (cond
+    ((atom? x) #f)
+    ((null? x) #f)
+    ((null? (cdr x)) #f)
+    ((null? (cdr (cdr x))) #t)
+    (else #f))))
+
+(define first
+  (lambda (p)
+    (cond
+     (else (car p)))))
+
+(define second
+  (lambda (p)
+    (cond
+     (else (car (cdr p))))))
+
+(define build
+  (lambda (s1 s2)
+    (cond
+     (else
+      (cons s1 (cons s2 (quote ())))))))
+
+(build 1 '(2 3))
+
+(define third
+  (lambda (p)
+    (car (cdr (cdr p)))))
+
+(third '(2 3 4 5))
+
+
+(define firsts
+  (lambda (rel)
+    (cond
+     ((null? rel) (quote ()))
+     (else
+      (cons (first (first rel)) (firsts (cdr rel)))))))
+
+(firsts '((2 3) (4 5)))
+
+(define fun?
+  (lambda (rel)
+    (set? (firsts rel))))
+
+
+(fun? '((2 3) (4 5) (2 7)))
+
+
+(define revrel
+  (lambda (rel)
+    (cond
+     ((null? rel) (quote ()))
+     (else
+      (cons (build (second (first rel))
+                   (first (first rel)))
+            (revrel (cdr rel)))))))
+
+(revrel '((2 3) (4 5) (2 7)))
+
+(define revpair
+  (lambda (pair)
+    (build (second pair) (first pair))))
+
+(define revrel-better
+  (lambda (rel)
+    (cond
+     ((null? rel) (quote ()))
+     (else
+      (cons (revpair (first rel))
+            (revrel-better (cdr rel)))))))
+
+(revrel-better '((2 3) (4 5) (2 7)))
+
+(define fullfun?
+  (lambda (rel)
+    (and (fun? rel) (fun? (revrel rel)))))
+
+(fullfun? '((2 3) (4 5) (6 7)))
+
+(fullfun? '((2 3) (4 5) (6 5)))
