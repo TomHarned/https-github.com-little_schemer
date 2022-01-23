@@ -627,3 +627,41 @@
 (fullfun? '((2 3) (4 5) (6 7)))
 
 (fullfun? '((2 3) (4 5) (6 5)))
+
+(equal? 1 1)
+
+(equal? "1" 1)
+
+(define rember-f
+  (lambda (test? a lat)
+    (cond
+     ((null? lat) (quote ()))
+     ((test? a (car lat)) (cdr lat))
+     (else (cons
+            (car lat)
+            (rember-f test? a (cdr lat)))))))
+
+(rember-f = 2 '(2 1 2 3 4 2 2))
+
+(define eq?-c
+  (lambda (a)
+    (lambda (x)
+      (eq? x a))))
+
+((eq?-c 5) 4)
+((eq?-c 5) 5)
+
+
+;; comment
+(define rember-f
+  (lambda (test?)
+    (lambda (a lat)
+      (cond
+       ((null? lat) (quote ()))
+       ((test? a (car lat)) (cdr lat))
+       (else (cons (car lat)
+                   ((rember-f test?) a (cdr lat))))))))
+
+(define rember= (rember-f =))
+
+(rember= 2 '(1 2 2 3))
