@@ -1,5 +1,3 @@
-#lang scheme
-
 (define atom?
   (lambda (x)
     (and (not (pair? x)) (not (null? x)))))
@@ -38,7 +36,7 @@
      ((zero? n) #f)
      ((zero? m) #t)
      (else
-      (gt (sub1 n) (sub1 m))))))
+      (> (sub1 n) (sub1 m))))))
 
 (define <
   (lambda (n m)
@@ -279,14 +277,6 @@
        (and (eqlist? (car l1) (car l2))
             (eqlist? (cdr l1) (cdr l2)))))))
 
-
-(define equal?
-  (lambda (s1 s2)
-    (cond
-     ((and (atom? s1) (atom? s2)) (egan? s1 s2))
-     ((or (atom? s1) (atom? s2)) #f)
-     (else
-      (eqlist? s1 s2)))))
 
 (define eqlist?
   (lambda (l1 l2)
@@ -665,3 +655,81 @@
 (define rember= (rember-f =))
 
 (rember= 2 '(1 2 2 3))
+
+(define insertL
+  (lambda (new old lat)
+    (cond
+     ((null? lat) (quote ()))
+     (else
+      (cond
+       ((equal? (car lat) old)
+        (cons new (cons old (cdr lat))))
+       (else
+        (cons (car lat) (insertL new old (cdr lat)))))))))
+
+
+(define insertL-f
+  (lambda (test?)
+    (lambda (new old lat)
+      (cond
+      ((null? lat) (quote ()))
+      ((test? (car lat) old)
+       (cons new lat))
+      (else (cons (car lat)
+                  ((insertL-f test?) new old
+                   (cdr lat))))))))
+
+(define insertL-eq (insertL-f =))
+
+(define insertL-gt (insertL-f >))
+
+(define insertL-lt (insertL-f <))
+
+(insertL-gt 2 1 '(1 2 2 3))
+
+(> 2 1)
+
+(define insertR-f
+  (lambda (test?)
+    (lambda (new old lat)
+      (cond
+      ((null? lat) (quote ()))
+      ((test? (car lat) old)
+       (cons old (cons new (cdr lat))))
+      (else (cons (car lat)
+                  ((insertR-f test?) new old
+                   (cdr lat))))))))
+
+(define insertR-eq (insertR-f =))
+
+(define insertL-lt (insertL-f <))
+
+(define insertR-f
+  (lambda (test?)
+    (lambda (new old lat)
+      (cond
+      ((null? lat) (quote ()))
+      ((test? (car lat) old)
+       (cons old (cons new (cdr lat))))
+      (else (cons (car lat)
+                  ((insertR-f test?) new old
+                   (cdr lat))))))))
+(define insert-g
+    (lambda (new old lat side)
+      (cond
+      ((null? lat) (quote ()))
+      ((equal? (car lat) old)
+       (cond
+        ((equal? side "left")
+         (cons new lat))
+        (else
+         (cons old (cons new (cdr lat))))))
+      (else (cons (car lat)
+                  (insert-g new old
+                   (cdr lat) side))))))
+
+(equal? "left" "left")
+
+(insert-g 75 3 '(1 2 3 4 5) "left")
+
+(insert-g 75 3 '(1 2 3 4 5) "right")
