@@ -19,11 +19,8 @@
       (cons (+ (car tup1) (car tup2))
          (tup+ (cdr tup1) (cdr tup2)))))))
 
-<<<<<<< HEAD
 (car '(1 2 3 4))
-=======
 (car '(1 1))
->>>>>>> 5a3d7babbbe3d5f6e8dbc4994e32b3ca01d1100f
 
 (tup+ '(1 2 3) '(1 2 3))
 
@@ -711,19 +708,7 @@
       (else (cons (car lat)
                   ((insertR-f test?) new old
                    (cdr lat))))))))
-(define insert-g
-    (lambda (new old lat side)
-      (cond
-      ((null? lat) (quote ()))
-      ((equal? (car lat) old)
-       (cond
-        ((equal? side "left")
-         (cons new lat))
-        (else
-         (cons old (cons new (cdr lat))))))
-      (else (cons (car lat)
-                  (insert-g new old
-                   (cdr lat) side))))))
+
 (define insert-g
   (lambda (seq)
     (lambda (new old l)
@@ -750,7 +735,6 @@
      (else (cons (car l)
                  (subst new old (cdr l)))))))
 
-
 (define seqS
   (lambda (new old l)
     (cons new l)))
@@ -762,10 +746,6 @@
 (subst "Tom" "Thomas" '("Jen" "Elliot" "Thomas" "Julian" "Margot"))
 
 (subst 13 3 '(1 2 3 4))
-
-(equal? "Tom" (car '("Tom" "Elliot" "Thomas" "Julian" "Margot")))
-
-(insert-g 75 3 '(1 2 3 4 5) "right")
 
 ;; Inserts new and old onto a list from left to right
 (define seqL
@@ -790,6 +770,50 @@
         (cons (car l)
               ((insert-g seq) new old (cdr l))))))))
 
-(insert-g 1 4 '(3 4) "left")
 
-(seqL 1 4 '(3 4))
+(define value
+  (lambda (nexp)
+    (cond
+     ((atom? nexp) nexp)
+     ((equal? (operator nexp) (quote +))
+      (+ (value (1st-sub-exp nexp))
+            (value (2nd-sub-exp nexp))))
+     ((equal? (operator nexp) (quote *))
+      (* (value (1st-sub-exp nexp))
+         (value (2nd-sub-exp nexp))))
+     (else
+      (expt (value (operator 1st-sub-exp))
+            (value (operator 2nd-sub-exp)))))))
+
+(define atom-to-function
+  (lambda (x)
+    (cond
+     ((equal? x (quote +)) +)
+     ((equal? x (quote *)) *)
+     (else expt))))
+
+((atom-to-function (operator '(+ 2 5 6))) 3 4 5)
+
+(define value
+  (lambda (nexp)
+    (cond
+     ((atom? nexp) nexp)
+     (else ((atom-to-function (operator nexp))
+                   (value (1st-sub-exp nexp))
+                   (value (2nd-sub-exp nexp)))))))
+
+(value '(+ (+ 2 2) (+ 3 3)))
+
+(operator '(+ 2 2))
+
+(define multirember-f
+ (lambda (test?)
+   (lambda (a lat)
+     (cond
+      ((null? lat) (quote ()))
+      ((test? (car lat) a)
+       ((multirember-f test?) a (cdr lat)))
+      (else (cons (car lat)
+                  ((multirember-f test?) a (cdr lat))))))))
+
+((multirember-f =) 1 '(1 2 3 2 1))
