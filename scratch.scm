@@ -19,7 +19,11 @@
       (cons (+ (car tup1) (car tup2))
          (tup+ (cdr tup1) (cdr tup2)))))))
 
+<<<<<<< HEAD
 (car '(1 2 3 4))
+=======
+(car '(1 1))
+>>>>>>> 5a3d7babbbe3d5f6e8dbc4994e32b3ca01d1100f
 
 (tup+ '(1 2 3) '(1 2 3))
 
@@ -760,3 +764,32 @@
 (subst 13 3 '(1 2 3 4))
 
 (equal? "Tom" (car '("Tom" "Elliot" "Thomas" "Julian" "Margot")))
+
+(insert-g 75 3 '(1 2 3 4 5) "right")
+
+;; Inserts new and old onto a list from left to right
+(define seqL
+  (lambda (new old l)
+    (cons new (cons old l))))
+
+(seqL 1 2 3)
+
+;; Inserts new and old onto a list from right to left
+(define seqR
+  (lambda (new old l)
+    (cons old (cons old l))))
+
+(define insert-g
+  (lambda (seq)
+    (lambda (new old l)
+      (cond
+       ((null? l) (quote ()))
+       ((equal? old (car l))
+        (seq new old (cdr l)))
+       (else
+        (cons (car l)
+              ((insert-g seq) new old (cdr l))))))))
+
+(insert-g 1 4 '(3 4) "left")
+
+(seqL 1 4 '(3 4))
