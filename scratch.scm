@@ -2,6 +2,8 @@
   (lambda (x)
     (and (not (pair? x)) (not (null? x)))))
 
+(+ 1 2 3)
+
 (define lat?
   (lambda (l)
     (cond
@@ -17,7 +19,7 @@
       (cons (+ (car tup1) (car tup2))
          (tup+ (cdr tup1) (cdr tup2)))))))
 
-(car 1 1 )
+(car '(1 2 3 4))
 
 (tup+ '(1 2 3) '(1 2 3))
 
@@ -525,14 +527,14 @@
            (intersectall '((5 4 3) (4 5 6))))
 
 (intersect '(1 2 4)
-           (intersect '(5 4 3))
-           (intersectall '((4 5 6))))
+           (intersect '(5 4 3)
+           (intersectall '((4 5 6)))))
 
 (intersect '(1 2 4)
        (intersect '(5 4 3)
                 '(4 5 6)))
 
-(intersectall '(1 2 3) '(5 4 3) '(4 5 6))
+(intersectall '((1 5 4) '(5 4 3) '(4 5 6)))
 
 (define a-pair?
   (lambda (x)
@@ -679,15 +681,6 @@
                   ((insertL-f test?) new old
                    (cdr lat))))))))
 
-(define insertL-eq (insertL-f =))
-
-(define insertL-gt (insertL-f >))
-
-(define insertL-lt (insertL-f <))
-
-(insertL-gt 2 1 '(1 2 2 3))
-
-(> 2 1)
 
 (define insertR-f
   (lambda (test?)
@@ -727,9 +720,43 @@
       (else (cons (car lat)
                   (insert-g new old
                    (cdr lat) side))))))
+(define insert-g
+  (lambda (seq)
+    (lambda (new old l)
+      (cond
+       ((null? l) (quote ()))
+       ((equal? (car l) old)
+        (seq new old (cdr l)))
+       (else
+        (cons (car l)
+              ((insert-g seq)
+               new old (cdr l))))))))
 
-(equal? "left" "left")
+(define insertL-2
+  (insert-g
+   (lambda (new old l)
+     (cons new (cons old l)))))
 
-(insert-g 75 3 '(1 2 3 4 5) "left")
+(define subst
+  (lambda (new old l)
+    (cond
+     ((null? l) (quote ()))
+     ((equal? (car l) old)
+      (cons new (cdr l)))
+     (else (cons (car l)
+                 (subst new old (cdr l)))))))
 
-(insert-g 75 3 '(1 2 3 4 5) "right")
+
+(define seqS
+  (lambda (new old l)
+    (cons new l)))
+
+(seqS 13 3 '(1 2 3 4))
+
+(define subst (insert-g seqS))
+
+(subst "Tom" "Thomas" '("Jen" "Elliot" "Thomas" "Julian" "Margot"))
+
+(subst 13 3 '(1 2 3 4))
+
+(equal? "Tom" (car '("Tom" "Elliot" "Thomas" "Julian" "Margot")))
