@@ -757,15 +757,6 @@
 
 (seqS 13 3 '(1 2 3 4))
 
-(define subst (insert-g seqS))
-
-(subst "Tom" "Thomas" '("Jen" "Elliot" "Thomas" "Julian" "Margot"))
-
-(subst 13 3 '(1 2 3 4))
-
-(equal? "Tom" (car '("Tom" "Elliot" "Thomas" "Julian" "Margot")))
-
-(insert-g 75 3 '(1 2 3 4 5) "right")
 
 ;; Inserts new and old onto a list from left to right
 (define seqL
@@ -793,3 +784,30 @@
 (insert-g 1 4 '(3 4) "left")
 
 (seqL 1 4 '(3 4))
+
+(define subst (insert-g seqS))
+
+(subst "Tom" "Thomas" '("Jen" "Elliot" "Thomas" "Julian" "Margot"))
+
+(cons #f '(1 2 3))
+
+
+(subst 13 3 '(1 2 3 4))
+
+(equal? "Tom" (car '("Tom" "Elliot" "Thomas" "Julian" "Margot")))
+
+(insert-g 75 3 '(1 2 3 4 5) "right")
+
+(define seqrem
+  (lambda (new old l)
+    l))
+
+(define yyy
+  (lambda (a l)
+    ((insert-g seqprem) #f a l)))
+
+define yyy2
+  (lambda (a l)
+    ((insert-g seqprem) 1 a l))
+
+(yyy "sausage" '("pizza" "with" "sausage" "and" "bacon"))
