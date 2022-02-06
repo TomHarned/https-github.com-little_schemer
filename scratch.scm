@@ -743,10 +743,8 @@
 
 (define subst (insert-g seqS))
 
-(subst "Tom" "Thomas" '("Jen" "Elliot" "Thomas" "Julian" "Margot"))
 
 (subst 13 3 '(1 2 3 4))
->>>>>>> 8506b7217332349fd2a468f00d7a379ee4710d89
 
 ;; Inserts new and old onto a list from left to right
 (define seqL
@@ -776,16 +774,13 @@
 
 (define subst (insert-g seqS))
 
-(subst "Tom" "Thomas" '("Jen" "Elliot" "Thomas" "Julian" "Margot"))
 
 (cons #f '(1 2 3))
 
 
 (subst 13 3 '(1 2 3 4))
 
-(equal? "Tom" (car '("Tom" "Elliot" "Thomas" "Julian" "Margot")))
 
-(insert-g 75 3 '(1 2 3 4 5) "right")
 
 (define seqrem
   (lambda (new old l)
@@ -793,7 +788,7 @@
 
 (define yyy
   (lambda (a l)
-    ((insert-g seqprem) #f a l)))
+    ((insert-g seqrem) #f a l)))
 
 define yyy2
   (lambda (a l)
@@ -832,9 +827,6 @@ define yyy2
                    (value (1st-sub-exp nexp))
                    (value (2nd-sub-exp nexp)))))))
 
-(value '(+ (+ 2 2) (+ 3 3)))
-
-(operator '(+ 2 2))
 
 (define multirember-f
  (lambda (test?)
@@ -847,3 +839,5 @@ define yyy2
                   ((multirember-f test?) a (cdr lat))))))))
 
 ((multirember-f =) 1 '(1 2 3 2 1))
+
+;; start here
