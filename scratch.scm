@@ -743,7 +743,6 @@
 
 (define subst (insert-g seqS))
 
-(subst "Tom" "Thomas" '("Jen" "Elliot" "Thomas" "Julian" "Margot"))
 
 (subst 13 3 '(1 2 3 4))
 
@@ -770,6 +769,32 @@
         (cons (car l)
               ((insert-g seq) new old (cdr l))))))))
 
+
+(seqL 1 4 '(3 4))
+
+(define subst (insert-g seqS))
+
+
+(cons #f '(1 2 3))
+
+
+(subst 13 3 '(1 2 3 4))
+
+
+
+(define seqrem
+  (lambda (new old l)
+    l))
+
+(define yyy
+  (lambda (a l)
+    ((insert-g seqrem) #f a l)))
+
+define yyy2
+  (lambda (a l)
+    ((insert-g seqprem) 1 a l))
+
+(yyy "sausage" '("pizza" "with" "sausage" "and" "bacon"))
 
 (define value
   (lambda (nexp)
@@ -802,9 +827,6 @@
                    (value (1st-sub-exp nexp))
                    (value (2nd-sub-exp nexp)))))))
 
-(value '(+ (+ 2 2) (+ 3 3)))
-
-(operator '(+ 2 2))
 
 (define multirember-f
  (lambda (test?)
@@ -839,3 +861,6 @@
              (multiremberT worker-fun (cdr lat)))))))
 
 (multiremberT eq?-tuna '(pizza poontang tuna roasbeer))
+((multirember-f =) 1 '(1 2 3 2 1))
+
+;; start here
