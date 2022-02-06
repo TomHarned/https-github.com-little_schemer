@@ -860,7 +860,7 @@ define yyy2
        (cons (car lat)
              (multiremberT worker-fun (cdr lat)))))))
 
-(multiremberT eq?-tuna '(pizza poontang tuna roasbeer))
+(multiremberT eq?-tuna '(pizza fries tuna roasbeef))
 ((multirember-f =) 1 '(1 2 3 2 1))
 
 ;; start here
