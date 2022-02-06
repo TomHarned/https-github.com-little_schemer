@@ -816,4 +816,26 @@
       (else (cons (car lat)
                   ((multirember-f test?) a (cdr lat))))))))
 
-((multirember-f =) 1 '(1 2 3 2 1))
+
+(define multirember-eq? (multirember-f =))
+
+(define eq?-c
+  (lambda (a)
+    (lambda (x)
+      (equal? x a))))
+
+(define eq?-tuna (eq?-c (quote tuna)))
+
+(eq?-tuna 'tuna')
+
+(define multiremberT
+   (lambda (worker-fun lat)
+     (cond
+      ((null? lat) (quote ()))
+      ((worker-fun (car lat))
+       (multiremberT worker-fun (cdr lat)))
+      (else
+       (cons (car lat)
+             (multiremberT worker-fun (cdr lat)))))))
+
+(multiremberT eq?-tuna '(pizza poontang tuna roasbeer))
