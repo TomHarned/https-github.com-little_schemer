@@ -790,9 +790,9 @@
   (lambda (a l)
     ((insert-g seqrem) #f a l)))
 
-define yyy2
+(define yyy2
   (lambda (a l)
-    ((insert-g seqprem) 1 a l))
+    ((insert-g seqprem) 1 a l)))
 
 (yyy "sausage" '("pizza" "with" "sausage" "and" "bacon"))
 
