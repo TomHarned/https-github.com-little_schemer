@@ -860,7 +860,74 @@
        (cons (car lat)
              (multiremberT worker-fun (cdr lat)))))))
 
-(multiremberT eq?-tuna '(pizza poontang tuna roasbeer))
+(multiremberT eq?-tuna '(pizza fries tuna roasbeef))
 ((multirember-f =) 1 '(1 2 3 2 1))
 
-;; start here
+
+
+(define multiinsertR
+  (lambda (new old lat)
+    (cond
+     ((null? lat) (quote ()))
+     ((equal? old (car lat))
+      (cons old
+            (cons new
+                  (multiinsertR new old (cdr lat)))))
+     (else
+      (cons (car lat)
+            (multiinsertR new old (cdr lat)))))))
+
+(define multiinsertL
+  (lambda (new old lat)
+    (cond
+     ((null? lat) (quote ()))
+     ((equal? old (car lat))
+      (cons new
+            (cons old
+                  (multiinsertL new old (cdr lat)))))
+     (else
+      (cons (car lat)
+            (multiinsertL new old (cdr lat)))))))
+
+(define multiinsertLR
+  (lambda (new oldL oldR lat)
+    (cond
+     ((null? lat) (quote ()))
+     ((equal? oldL (car lat))
+      (cons new
+            (cons oldL
+                  (multiinsertLR new oldL oldR (cdr lat)))))
+     ((equal? oldR (car lat))
+      (cons oldR
+            (cons new
+                  (multiinsertLR new oldL oldR (cdr lat)))))
+     (else
+      (cons (car lat)
+            (multiinsertLR new oldL oldR (cdr lat)))))))
+
+;; (multiinsertL 99 2 '(1 2 3 2 1))
+;; (multiinsertR 99 2 '(1 2 3 2 1))
+;; (multiinsertLR 99 0 2 '(0 1 2 3 2 1 0))
+
+(define multiinsertLR&co
+  (lambda (new oldL oldR lat col)
+    (cond
+     ((null? lat)
+      (col (quote ())  0 0))
+     ((equal? oldL (car lat))
+      (multiinsertLR&co new oldL oldR
+                        (cdr lat)
+                        (lambda (newlat L R)
+                        (col (cons new (cons old (cdr newlat))) (add1 L) R))))
+     ((equal? oldR (car lat))
+      (multiinsertR new oldL oldR
+                    (cdr lat)
+                    (lambda (newlat L R)
+                        (col (cons old (cons new (cdr newlat))) L (add1 R))))) ;; Placeholder
+     (else
+      (multiinsertLR&co new oldL oldR
+                        (cdr lat)
+                        (lambda (newlat L R)
+                          (col (cons (car lat) newlat) L R)
+                          ;; Placeholder
+                        ))))))
