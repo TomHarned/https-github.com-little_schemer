@@ -950,25 +950,77 @@
   (lambda (n)
     (integer? (/ n 2))))
 
-(define dumb-evens-only?*
-  (lambda (n)
+(define dumb-evens-only*
+  (lambda (l)
     (cond
-     ((null? n) (quote ()))
-     ((atom? n)
+     ((null? l) (quote ()))
+     ((atom? l)
       (cond
-       ((dumb-even? n) n)
-       (else (quote ()))))
+       ((dumb-even? l) l)
+       (else (quote()))))
+      (else
+       (cons
+        (dumb-evens-only* (car l))
+        (dumb-evens-only* (cdr l)))))))
+
+(define l-evens
+  (lambda (l)
+    (cond
+     ((null? l) (quote ()))
+     ((dumb-even? (car l))
+      (cons (car l) (l-evens (cdr l))))
      (else
+      (l-evens (cdr l))))))
+
+(define l-evens*
+  (lambda (l)
+    (cond
+     ((null? l) (quote ()))
+     ((atom? l)
       (cond
-       ((dumb-evens-only?* (car n))
-        (cons (car n)
-              (dumb-evens-only?* (cdr n))))
+       ((dumb-even? l) l)
+       (else (quote ()))))
+     ((lat? l)
+      (cond
+       ((dumb-even? (car l))
+        (cons (car l) (l-evens* (cdr l))))
        (else
-        (dumb-evens-only?* (cdr n))))))))
+        (l-evens* (cdr l)))))
 
-(atom? (car '(0 1 2 3 (4 5 6) 7 8 9 100 200)))
+(define evens-only*
+    (lambda (l)
+        (cond
+            ((null? l) (quote())))
+            ((atom? (car l))
+                (cond
+                    ((even? (car l)) (cons (car l) (evens-only* (cdr l))))
+                    (else
+                        (evens-only* (cdr l)))))
+            (else
+                (cons (evens-only* (car l)) (evens-only* (cdr l))))))
 
-(dumb-evens-only?* '(0 1 2 3 (4 5 6) 7 8 9 100 200))
+(evens-only* '((9 1 2 8) 3 10 ((9 9) 7 6) 2))
+(l-evens* '((9 1 2 8) 3 10 ((9 9) 7 6) 2))
+
+(dumb-evens-only* '(1 2 3 (4 5 6) 7 8 9 100 200))
+
+(dumb-evens-only* (car  '(0 1 2 3 (4 5 6) 7 8 9 100 200)))
 
 (atom? 2)
-(dumb-evens-only?* 2)
+(dumb-evens-only?* '(3))
+
+
+(define evens-only*
+  (lambda (l)
+    (cond
+      ((null? l) '())
+      ((atom? (car l))
+       (cond
+         ((even? (car l))
+          (cons (car l)
+                (evens-only* (cdr l))))
+         (else
+           (evens-only* (cdr l)))))
+      (else
+        (cons (evens-only* (car l))
+              (evens-only* (cdr l)))))))
