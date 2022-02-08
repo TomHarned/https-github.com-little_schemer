@@ -923,11 +923,52 @@
       (multiinsertR new oldL oldR
                     (cdr lat)
                     (lambda (newlat L R)
-                        (col (cons old (cons new (cdr newlat))) L (add1 R))))) ;; Placeholder
+                        (col (cons old (cons new (cdr newlat))) L (add1 R)))))
      (else
       (multiinsertLR&co new oldL oldR
                         (cdr lat)
                         (lambda (newlat L R)
                           (col (cons (car lat) newlat) L R)
-                          ;; Placeholder
                         ))))))
+
+;; 0 (multiinsertLR&co 'salty 'fish 'chips '(chips and fish or fish and chips) col)
+
+
+;; 1 (multiinsertLR&co 'salty 'fish 'chips
+;;                  '(and fish or fish and chips)
+;;                  (lambda (newlat L R)
+;;                    (col (cons 'chips (cons 'salty '(cdr newlat)) L (add1 R)))))
+
+
+;; 2 (multiinsertLR&co 'salty 'fish 'chips
+;;                  '(fish or fish and chips)
+;;                  (lambda (newlat L R)
+;;                    (col (cons 'chips (cons 'salty '(cdr newlat)) L (add1 R)))))
+
+
+(define dumb-even?
+  (lambda (n)
+    (integer? (/ n 2))))
+
+(define dumb-evens-only?*
+  (lambda (n)
+    (cond
+     ((null? n) (quote ()))
+     ((atom? n)
+      (cond
+       ((dumb-even? n) n)
+       (else (quote ()))))
+     (else
+      (cond
+       ((dumb-evens-only?* (car n))
+        (cons (car n)
+              (dumb-evens-only?* (cdr n))))
+       (else
+        (dumb-evens-only?* (cdr n))))))))
+
+(atom? (car '(0 1 2 3 (4 5 6) 7 8 9 100 200)))
+
+(dumb-evens-only?* '(0 1 2 3 (4 5 6) 7 8 9 100 200))
+
+(atom? 2)
+(dumb-evens-only?* 2)
