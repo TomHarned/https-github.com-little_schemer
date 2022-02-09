@@ -1024,3 +1024,98 @@
       (else
         (cons (evens-only* (car l))
               (evens-only* (cdr l)))))))
+
+(define atom-to-function
+  (lambda (x)
+    (cond
+     ((equal? x (quote *)) *)
+     ((equal? x (quote +)) +)
+     (else expt))))
+
+((atom-to-function '*) 2 3)
+((atom-to-function '+) 2 3)
+((atom-to-function 'expt) 2 3)
+
+(define value-short
+  (lambda (nexp)
+    (cond
+     ((atom? nexp) nexp)
+     (else
+      ((atom-to-function
+        (operator nexp))
+       (value-short (1st-sub-exp nexp))
+       (value-short (2nd-sub-exp nexp)))))))
+
+
+(define multirember
+ (lambda (a lat)
+   (cond
+    ((null? lat) (quote ()))
+    ((equal? (car lat) a)
+     (multirember a (cdr lat)))
+    (else
+     (cons
+      (car lat)
+      (multirember a (cdr lat)))))))
+
+
+(define multirember-f
+  (lambda (test?)
+    (lambda (a lat)
+      (cond
+       ((null? lat) (quote ()))
+       ((test? (car lat) a)
+        ((multirember-f test?) a (cdr lat)))
+       (else
+        (cons
+         (car lat)
+         ((multirember-f test?)
+          a (cdr lat))))))))
+
+(define eq?-tuna
+  (lambda (a)
+  (equal? a 'tuna)))
+
+(define multiremberT
+  (lambda (test? lat)
+    (cond
+     ((null? lat) (quote ()))
+     ((test? (car lat)) (multiremberT test? (cdr lat)))
+     (else
+      (cons (car lat) (multiremberT test? (cdr lat)))))))
+
+((multirember-f <) 3 '(1 2 3 4 5 6))
+
+((multirember-f equal?) 'tuna '(shrimp salad tuna salad and tuna))
+
+(multiremberT eq?-tuna '(shrimp salad tuna salad and tuna))
+
+(eq?-tuna 'tuna)
+(define multirember-eq? (multirember-f =))
+
+(multirember-eq? 3 '(3 1 2 3 4 3 5 6))
+
+(define multirember&co
+  (lambda (a lat col)
+    (cond
+    ((null? lat)
+     (col (quote ()) (quote ())))
+    ((equal? (car lat) a)
+     (multirember&co
+      a (cdr lat)
+      (lambda (newlat seen)
+        (col newlat
+             (cons (car lat) seen)))))
+    (else
+     (multirember&co
+      a (cdr lat)
+      (lambda (newlat seen)
+        (col (cons (car lat) newlat) seen)))))))
+
+(define a-friend
+  (lambda (x y)
+    (null? y)))
+
+(multirember&co 2 '(1 2 3 2 4 2 5 2) print)
+
+(multirember&co 'tuna '(strawberries tuna and swordfish) a-friend)
