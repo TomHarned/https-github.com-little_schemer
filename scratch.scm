@@ -963,51 +963,7 @@
         (dumb-evens-only* (car l))
         (dumb-evens-only* (cdr l)))))))
 
-(define l-evens
-  (lambda (l)
-    (cond
-     ((null? l) (quote ()))
-     ((dumb-even? (car l))
-      (cons (car l) (l-evens (cdr l))))
-     (else
-      (l-evens (cdr l))))))
 
-(define l-evens*
-  (lambda (l)
-    (cond
-     ((null? l) (quote ()))
-     ((atom? l)
-      (cond
-       ((dumb-even? l) l)
-       (else (quote ()))))
-     ((lat? l)
-      (cond
-       ((dumb-even? (car l))
-        (cons (car l) (l-evens* (cdr l))))
-       (else
-        (l-evens* (cdr l)))))
-
-(define evens-only*
-    (lambda (l)
-        (cond
-            ((null? l) (quote())))
-            ((atom? (car l))
-                (cond
-                    ((even? (car l)) (cons (car l) (evens-only* (cdr l))))
-                    (else
-                        (evens-only* (cdr l)))))
-            (else
-                (cons (evens-only* (car l)) (evens-only* (cdr l))))))
-
-(evens-only* '((9 1 2 8) 3 10 ((9 9) 7 6) 2))
-(l-evens* '((9 1 2 8) 3 10 ((9 9) 7 6) 2))
-
-(dumb-evens-only* '(1 2 3 (4 5 6) 7 8 9 100 200))
-
-(dumb-evens-only* (car  '(0 1 2 3 (4 5 6) 7 8 9 100 200)))
-
-(atom? 2)
-(dumb-evens-only?* '(3))
 
 
 (define evens-only*
@@ -1119,3 +1075,70 @@
 (multirember&co 2 '(1 2 3 2 4 2 5 2) print)
 
 (multirember&co 'tuna '(strawberries tuna and swordfish) a-friend)
+
+(define multiinsertL
+  (lambda (new old lat)
+    (cond
+     ((null? lat) (quote ()))
+     ((equal? (car lat) old)
+      (cons
+       new
+       (cons
+        old
+        (multiinsertL new old (cdr lat)))))
+     (else
+      (cons
+       (car lat)
+       (multiinsertL new old (cdr lat)))))))
+
+(multiinsertL 1 2 '(0 2 4 6 8 6 4 2 0))
+
+(define multiinsertR
+  (lambda (new old lat)
+    (cond
+     ((null? lat) (quote ()))
+     ((equal? (car lat) old)
+      (cons
+       old
+       (cons
+        new
+        (multiinsertR new old (cdr lat)))))
+     (else
+      (cons
+       (car lat)
+       (multiinsertR new old (cdr lat)))))))
+
+
+(define multiinsertLR
+  (lambda (new oldL oldR lat)
+    (cond
+     ((null? lat) (quote ()))
+     ((equal? (car lat) oldL)
+      (cons new (cons oldL (multiinsertLR
+                       new oldL oldR (cdr lat)))))
+     ((equal? (car lat) oldR)
+      (cons oldR (cons new (multiinsertLR
+                            new oldL oldR (cdr lat)))))
+     (else
+      (cons (car lat) (multiinsertLR new oldL oldR (cdr lat)))))))
+
+(multiinsertLR 1 2 6 '(0 2 4 6 8 6 4 2 0))
+
+(define multiinsertLR&co
+  (lambda (new oldL oldR lat col)
+    (cond
+     ((null? lat)
+      (col (quote ()) 0 0))
+     ((equal? (car lat) oldL)
+      (multiinsertLR&co
+       new oldL oldR (cdr lat)
+       (lambda (newlat L R)
+         (col (cons new (cons oldL newlat)) (add1 L) R))))
+     ((equal? (car lat) oldR)
+      (multiinsertLR&co
+       ;;;
+       ))
+     (else
+      (multiinsertLR&co
+       ;;;
+       )))))
