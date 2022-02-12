@@ -1136,9 +1136,83 @@
          (col (cons new (cons oldL newlat)) (add1 L) R))))
      ((equal? (car lat) oldR)
       (multiinsertLR&co
-       ;;;
-       ))
+       new oldL oldR (cdr lat)
+       (lambda (newlat L R)
+         (col (cons oldR (cons new newlat)) L (add1 R)))))
      (else
       (multiinsertLR&co
-       ;;;
-       )))))
+       new oldL oldR (cdr lat)
+       (lambda (newlat L R)
+         (col (cons (car lat) newlat) L R)))))))
+
+(multiinsertLR&co 1 2 6 '(0 2 2 4 6 8 6 4 2 0) print)
+
+(multiinsertLR&co 'salty 'fish 'chips '(chips and fish or fish and chips chips) print)
+
+(define evens-only*
+  (lambda (l)
+    (cond
+     ((null? l) (quote ()))
+     ((atom? l)
+      (cond
+       ((even? l) l)
+       (else
+        (quote ()))))
+     (else
+      (cond
+       ((atom? (car l))
+        (cond
+         ((even? (car l))
+          (cons (car l)
+                (evens-only* (cdr l))))
+         (else
+          (evens-only* (cdr l)))))
+       (else
+        (evens-only* (car l))))))))
+
+(define evens-only*
+  (lambda (l)
+    (cond
+     ((null? l) (quote ()))
+     ((atom? (car l))
+      (cond
+       ((even? (car l))
+        (cons (car l) (evens-only* (cdr l))))
+       (else
+        (evens-only* (cdr l)))))
+     (else (cons (evens-only* (car l))
+                 (evens-only* (cdr l)))))))
+
+(evens-only* '(1 2 3 4 (1 1 88 2 5 6) 5 6 7 8))
+
+(define evens-only*&co
+  (lambda (l col)
+    (cond
+     ((null? l)
+      (col (quote ()) 1 0))
+     ((atom? (car l))
+      (cond
+       ((even? (car l))
+        (evens-only*&co (cdr l)
+         (lambda (newl p s)
+           (col (cons (car l) newl) (* p (car l)) s))))
+       (else
+        (evens-only*&co (cdr l)
+         (lambda (newl p s)
+           (col newl p (+ (car l) s)))))))
+     (else
+      (evens-only*&co
+             (car l)
+             (lambda (al ap as)
+               (evens-only*&co
+                (cdr l)
+                (lambda (dl dp ds)
+                  (col (cons al dl)
+                       (* ap dp) (+ as ds))))))))))
+
+
+(define the-last-friend
+  (lambda (newl product sum)
+    (cons sum (cons product newl))))
+
+(evens-only*&co '((9 1 2 8) 3 10 ((9 9) 7 6) 2) the-last-friend)
